@@ -1,0 +1,129 @@
+version: 2.1
+
+orbs:
+  jira: circleci/jira@1.3.1
+
+#==============================================================================
+# Executors
+#==============================================================================
+executors:
+  node_18:
+    docker:
+      - image: node:18.12.1
+        auth:
+          username: $MY_CIRCLECI_DOCKERHUB_USERNAME
+          password: $MY_CIRCLECI_DOCKERHUB_PASSWORD
+  node_16:
+    docker:
+      - image: node:16.19.0
+        auth:
+          username: $MY_CIRCLECI_DOCKERHUB_USERNAME
+          password: $MY_CIRCLECI_DOCKERHUB_PASSWORD
+
+#==============================================================================
+# Contexts
+#==============================================================================
+project_context: &project_context
+  context:
+    - generator-kata
+
+#==============================================================================
+# Filters
+#==============================================================================
+no_tag_filter: &no_tag_filter
+  filters:
+    branches:
+      ignore: master
+    tags:
+      ignore: /.*/
+
+release_tag_filter: &release_tag_filter
+  filters:
+    branches:
+      ignore: /.*/
+    tags:
+      only: /release-v.*/
+
+#==============================================================================
+# Commands
+#==============================================================================
+commands:
+  test:
+    steps:
+      - run: |
+          npm install
+          npm test
+  feature-test:
+    steps:
+      - run: |
+          npm install
+          npm run it
+
+#==============================================================================
+# Jobs
+#==============================================================================
+jobs:
+  test-16:
+    executor: node_16
+    steps:
+      - checkout
+      - test
+      - feature-test
+  test-18:
+    executor: node_18
+    steps:
+      - checkout
+      - test
+      - feature-test
+  deploy:
+    executor: node_18
+    steps:
+      - checkout
+      - run: |
+          npm config set _authToken=$MY_CIRCLECI_NPM_TOKEN
+          npm install
+          npm run build
+          npm publish --access public
+
+#==============================================================================
+# Workflows
+#==============================================================================
+workflows:
+  #
+  # General purpose pipeline to execute tests, no matter the source branches
+  # It voluntary exclude tags to not have a double work with the automatic
+  # release process (that also include testing))
+  #
+  "Test only pipeline":
+    jobs:
+      - test-16:
+          <<: *project_context
+          <<: *no_tag_filter
+          post-steps:
+            - jira/notify:
+                job_type: build
+      - test-18:
+          <<: *project_context
+          <<: *no_tag_filter
+          post-steps:
+            - jira/notify:
+                job_type: build
+
+  #
+  # When a release tag is pushed, this pipeline will retest everything
+  # before deploying the new release in the correct npmjs repo.
+  #
+  "Build and deploy pipeline":
+    jobs:
+      - test-16:
+          <<: *project_context
+          <<: *release_tag_filter
+      - test-18:
+          <<: *project_context
+          <<: *release_tag_filter
+      - deploy:
+          <<: *project_context
+          <<: *release_tag_filter
+          requires:
+            - test-16
+            - test-18

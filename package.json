@@ -1,0 +1,51 @@
+{
+    "name": "@clowder-generator/generator-kata",
+    "version": "0.1.0",
+    "description": "Help to bootstrap some kata. Choose a language, an exercise (or not), and start coding ",
+    "files": [
+        "generators"
+    ],
+    "keywords": [
+        "yeoman-generator"
+    ],
+    "author": "leddzip",
+    "license": "ISC",
+    "scripts": {
+        "clean": "rm -rf generators",
+        "test": "jest --config jest.config.json --passWithNoTests",
+        "preit": "npm run build",
+        "it": "cucumber-js",
+        "postit": "npm run clean",
+        "prebuild": "npm run clean",
+        "build": "tsc && cp -r src/app/templates generators/app/templates",
+        "lint": "eslint . --ext .ts",
+        "coverage:it": "nyc npm run it",
+        "prepare": "husky install"
+    },
+    "dependencies": {
+        "@clowder-generator/utils": "^0.7.0",
+        "yeoman-generator": "^5.7.0"
+    },
+    "devDependencies": {
+        "@cucumber/cucumber": "^8.9.1",
+        "@types/chai": "^4.3.4",
+        "@types/jest": "^29.2.4",
+        "@types/yeoman-generator": "^5.2.11",
+        "@types/yeoman-test": "^4.0.3",
+        "@typescript-eslint/eslint-plugin": "^5.48.1",
+        "chai": "^4.3.7",
+        "eslint": "^8.31.0",
+        "eslint-config-standard-with-typescript": "^27.0.1",
+        "eslint-plugin-import": "^2.27.4",
+        "eslint-plugin-n": "^15.6.1",
+        "eslint-plugin-promise": "^6.1.1",
+        "husky": "^8.0.3",
+        "jest": "^29.3.1",
+        "nyc": "^15.1.0",
+        "ts-jest": "^29.0.3",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.9.4",
+        "yeoman-environment": "^3.13.0",
+        "yeoman-test": "^6.3.0"
+    }
+}
