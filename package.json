@@ -1,5 +1,5 @@
 {
-    "name": "@clowder-generator/generator-kata",
+    "name": "@leddzip-xdd/generator-kata",
     "version": "0.1.0",
     "description": "Help to bootstrap some kata. Choose a language, an exercise (or not), and start coding ",
     "files": [
