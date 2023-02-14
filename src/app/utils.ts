@@ -1,4 +1,4 @@
-export const printer = () => {
-    console.log("hello");
-    return "hello";
-}
+export const printer = (): string => {
+    console.log('hello');
+    return 'hello';
+};

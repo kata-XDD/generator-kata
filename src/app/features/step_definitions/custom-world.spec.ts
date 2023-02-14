@@ -1,5 +1,5 @@
-import {RunContext, RunResult} from "yeoman-test";
-import {setWorldConstructor} from "@cucumber/cucumber";
+import { RunContext, RunResult } from 'yeoman-test';
+import { setWorldConstructor } from '@cucumber/cucumber';
 
 export class CustomWorld {
     public runResult?: RunResult;
