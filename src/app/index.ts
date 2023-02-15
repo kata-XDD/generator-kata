@@ -1,9 +1,15 @@
 import Generator, { GeneratorOptions } from 'yeoman-generator';
-import * as Base from './questions/Base';
-import { IYeomanGenerator } from '@clowder-generator/utils';
+import * as Language from './questions/language/index';
+import * as Kotlin from './questions/language/kotlin';
+import { fromKebabCase, IYeomanGenerator } from '@clowder-generator/utils';
 
 export interface GeneratorContext {
-    name: string;
+    language: string;
+    kotlin?: {
+        artifactId: string;
+        packageName: string;
+    };
+
 }
 
 export default class GeneratorKata extends Generator<GeneratorOptions> implements IYeomanGenerator {
@@ -16,25 +22,42 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
 
     public initializing(): void {
         this.context = {
-            name: ''
+            language: '',
+            kotlin: undefined
         };
     }
 
     public async prompting(): Promise<void> {
-        const baseAnswer = await this.prompt<Base.Answer>(Base.question);
-        this.context.name = baseAnswer.name; // consider replace direct assignation to enricher to merge response with context
+        const languageAnswer = await this.prompt<Language.Answer>(Language.question);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.context!.language = languageAnswer.language;
+        switch (languageAnswer.language) {
+            case 'kotlin': {
+                const kotlinAnswer = await this.prompt<Kotlin.Answer>(Kotlin.question);
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                this.context!.kotlin = {
+                    artifactId: kotlinAnswer.artifactId,
+                    packageName: fromKebabCase(kotlinAnswer.artifactId).toCamelCase().toLowerCase()
+                };
+                break;
+            }
+            default:
+                throw new Error();
+        }
     }
 
     public configuring(): void {
-        // this.config.save();
+        this.config.save();
     }
 
     public writing(): void {
         this.fs.copyTpl(
-            this.templatePath('**/*'),
+            this.templatePath('kotlin/**/*'),
             this.destinationPath(),
             {
-                name: this.context.name
+                mavenArtifactId: this.context?.kotlin?.artifactId,
+                kotlinPackageName: this.context?.kotlin?.packageName,
+                mavenScenarioName: 'dummy'
             },
             undefined,
             { globOptions: { dot: true } }

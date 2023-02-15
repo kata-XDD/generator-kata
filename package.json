@@ -19,6 +19,7 @@
         "prebuild": "npm run clean",
         "build": "tsc && cp -r src/app/templates generators/app/templates",
         "lint": "eslint . --ext .ts",
+        "lint:fix": "eslint . --ext .ts --fix",
         "coverage:it": "nyc npm run it",
         "prepare": "husky install"
     },
