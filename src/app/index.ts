@@ -1,8 +1,7 @@
 import Generator, { GeneratorOptions } from 'yeoman-generator';
 import * as Language from './questions/language/index';
 import * as Kotlin from './questions/language/kotlin';
-import { fromKebabCase, IYeomanGenerator } from '@clowder-generator/utils';
-import * as path from 'path';
+import { fromKebabCase, IYeomanGenerator, rename } from '@clowder-generator/utils';
 
 export interface GeneratorContext {
     language: string;
@@ -51,17 +50,6 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
         this.config.save();
     }
 
-    private readonly _rename = (destinationPath: string): string => {
-        let baseName = path.basename(destinationPath);
-        let dirName = path.dirname(destinationPath);
-
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        baseName = baseName.replace(/kotlinPackageName/g, this.context!.kotlin!.packageName);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        dirName = dirName.replace(/kotlinPackageName/g, this.context!.kotlin!.packageName);
-        return path.join(dirName, baseName);
-    };
-
     public writing(): void {
         this.fs.copyTpl(
             this.templatePath('kotlin/**/*'),
@@ -74,7 +62,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
             undefined,
             {
                 globOptions: { dot: true },
-                processDestinationPath: this._rename
+                processDestinationPath: rename('kotlinPackageName', this.context?.kotlin?.packageName ?? 'kotlinPackageName')
             }
         );
     }
