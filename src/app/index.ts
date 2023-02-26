@@ -1,7 +1,7 @@
 import Generator, { GeneratorOptions } from 'yeoman-generator';
 import * as Language from './questions/language/index';
 import * as Kotlin from './questions/language/kotlin';
-import { fromKebabCase, IYeomanGenerator, rename } from '@clowder-generator/utils';
+import { CaseHelper, IYeomanGenerator, DestinationProcessor } from '@clowder-generator/utils';
 
 export interface GeneratorContext {
     language: string;
@@ -37,7 +37,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 this.context!.kotlin = {
                     artifactId: kotlinAnswer.artifactId,
-                    packageName: fromKebabCase(kotlinAnswer.artifactId).toCamelCase().toLowerCase()
+                    packageName: CaseHelper.fromKebabCase(kotlinAnswer.artifactId).toCamelCase().toLowerCase()
                 };
                 break;
             }
@@ -62,7 +62,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
             undefined,
             {
                 globOptions: { dot: true },
-                processDestinationPath: rename('kotlinPackageName', this.context?.kotlin?.packageName ?? 'kotlinPackageName')
+                processDestinationPath: DestinationProcessor.rename('kotlinPackageName', this.context?.kotlin?.packageName ?? 'kotlinPackageName')
             }
         );
     }
