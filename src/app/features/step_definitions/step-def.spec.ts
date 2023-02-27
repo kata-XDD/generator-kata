@@ -13,12 +13,9 @@ Given('a generator', function (this: CustomWorld) {
 });
 
 When('I call it with the following prompt answer', async function (this: CustomWorld, dataTable: DataTable) {
-    // TODO - put const since never reassign, but will change in the future
     const promptSetup = {
-        // TODO - update with your actual prompt values
-        name: 'default',
-        version: 'default',
-        description: 'default'
+        language: 'default',
+        artifactId: 'default'
     };
 
     type PromptKey = keyof typeof promptSetup;
@@ -60,17 +57,11 @@ Then('I should have a file {string} with the content', function (this: CustomWor
     this.runResult.assertFileContent('generated.md', docString);
 });
 
-Then('I should have the following CICD files', assertFileExist);
-Then('I should have the following config files', assertFileExist);
-Then('I should have the following sources files', assertFileExist);
-Then('I should have the following feature files', assertFileExist);
-Then('I should have the following template files', assertFileExist);
-Then('I should have the following files', assertFileExist);
-function assertFileExist(this: CustomWorld, dataTable: DataTable): void {
+Then('I should have the following files', function (this: CustomWorld, dataTable: DataTable): void {
     for (const filePath of dataTable.rows()) {
         this.runResult?.assertFile(filePath);
     }
-}
+});
 
 Then('I should have an error', function (this: CustomWorld) {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
