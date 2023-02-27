@@ -1,5 +1,5 @@
 {
-    "name": "@clowder-generator/generator-kata",
+    "name": "@leddzip-xdd/generator-kata",
     "version": "0.1.0",
     "description": "Help to bootstrap some kata. Choose a language, an exercise (or not), and start coding ",
     "files": [
@@ -19,11 +19,12 @@
         "prebuild": "npm run clean",
         "build": "tsc && cp -r src/app/templates generators/app/templates",
         "lint": "eslint . --ext .ts",
+        "lint:fix": "eslint . --ext .ts --fix",
         "coverage:it": "nyc npm run it",
         "prepare": "husky install"
     },
     "dependencies": {
-        "@clowder-generator/utils": "^0.7.0",
+        "@clowder-generator/utils": "^1.0.0",
         "yeoman-generator": "^5.7.0"
     },
     "devDependencies": {
