@@ -1,4 +1,4 @@
-package fr.leddzip.kata.xdd.base.kotlinxdd.<%= kotlinPackageName %>
+package <%= kotlinGroupId %>.<%= kotlinPackageName %>
 
 class Dummy {
 

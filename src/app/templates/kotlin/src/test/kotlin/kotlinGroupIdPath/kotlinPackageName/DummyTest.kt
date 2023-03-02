@@ -1,4 +1,4 @@
-package fr.leddzip.kata.xdd.base.kotlinxdd.<%= kotlinPackageName %>
+package <%= kotlinGroupId %>.<%= kotlinPackageName %>
 
 import org.junit.jupiter.api.Test
 

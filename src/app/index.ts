@@ -2,10 +2,13 @@ import Generator, { GeneratorOptions } from 'yeoman-generator';
 import * as Language from './questions/language/index';
 import * as Kotlin from './questions/language/kotlin';
 import { CaseHelper, IYeomanGenerator, DestinationProcessor } from '@clowder-generator/utils';
+import * as path from 'path';
 
 export interface GeneratorContext {
     language: string;
     kotlin?: {
+        groupId: string;
+        groupPath: string;
         artifactId: string;
         packageName: string;
     };
@@ -33,9 +36,11 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
         this.context!.language = languageAnswer.language;
         switch (languageAnswer.language) {
             case 'kotlin': {
-                const kotlinAnswer = await this.prompt<Kotlin.Answer>(Kotlin.question);
+                const kotlinAnswer = await this.prompt<Kotlin.Answer>(Kotlin.questions);
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 this.context!.kotlin = {
+                    groupId: kotlinAnswer.groupId,
+                    groupPath: path.join(...kotlinAnswer.groupId.split('.')),
                     artifactId: kotlinAnswer.artifactId,
                     packageName: CaseHelper.fromKebabCase(kotlinAnswer.artifactId).toCamelCase().toLowerCase()
                 };
@@ -56,13 +61,16 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
             this.destinationPath(),
             {
                 mavenArtifactId: this.context?.kotlin?.artifactId,
+                kotlinGroupId: this.context?.kotlin?.groupId,
                 kotlinPackageName: this.context?.kotlin?.packageName,
                 mavenScenarioName: 'dummy'
             },
             undefined,
             {
                 globOptions: { dot: true },
-                processDestinationPath: DestinationProcessor.rename('kotlinPackageName', this.context?.kotlin?.packageName ?? 'kotlinPackageName')
+                processDestinationPath: DestinationProcessor.renameAll(
+                    ['kotlinPackageName', this.context?.kotlin?.packageName],
+                    ['kotlinGroupIdPath', this.context?.kotlin?.groupPath])
             }
         );
     }
