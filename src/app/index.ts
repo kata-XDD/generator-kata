@@ -60,6 +60,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
             this.templatePath('kotlin/**/*'),
             this.destinationPath(),
             {
+                mavenGroupId: this.context?.kotlin?.groupId,
                 mavenArtifactId: this.context?.kotlin?.artifactId,
                 kotlinGroupId: this.context?.kotlin?.groupId,
                 kotlinPackageName: this.context?.kotlin?.packageName,
