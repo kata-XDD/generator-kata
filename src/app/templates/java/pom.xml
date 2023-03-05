@@ -4,13 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>fr.leddzip.kata.xdd.base</groupId>
-    <artifactId>java-8-xdd</artifactId>
+    <groupId><%= mavenGroupId %></groupId>
+    <artifactId><%= mavenArtifactId %></artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-    <name>base kotlin xdd</name>
+    <name>xdd java kata for <%= mavenScenarioName %></name>
 
     <properties>
+        <java.version><%= mavenJavaVersion %></java.version>
         <assertj-core.version>3.23.1</assertj-core.version>
         <junit-jupiter.version>5.9.0</junit-jupiter.version>
         <junit-jupiter-engine.version>5.9.0</junit-jupiter-engine.version>
@@ -32,7 +34,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven-failsafe-plugin.version}</version>
                 <configuration>
-                    <testSourceDirectory>src/bdd/java</testSourceDirectory>
+                    <testSourceDirectory>src/feature-test/java</testSourceDirectory>
                     <includes>
                         <include>**/RunCucumber</include>
                     </includes>
@@ -52,19 +54,19 @@
                 <version>${build-helper-maven-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>add-bdd-test-sources</id>
+                        <id>add-feature-test-sources</id>
                         <phase>generate-test-sources</phase>
                         <goals>
                             <goal>add-test-source</goal>
                         </goals>
                         <configuration>
                             <sources>
-                                <source>src/bdd/java</source>
+                                <source>src/feature-test/java</source>
                             </sources>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>add-bdd-test-resources</id>
+                        <id>add-feature⎄0-test-resources</id>
                         <phase>generate-test-resources</phase>
                         <goals>
                             <goal>add-test-resource</goal>
@@ -72,7 +74,7 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>src/bdd/resources</directory>
+                                    <directory>src/feature-test/resources</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -83,8 +85,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
         </plugins>
