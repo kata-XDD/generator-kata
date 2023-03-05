@@ -9,6 +9,7 @@ export const question: Generator.Question = {
     name: 'language' as keyof Answer,
     message: 'What language do you want to use ?',
     choices: [
-        'kotlin'
+        'kotlin',
+        'java'
     ]
 };

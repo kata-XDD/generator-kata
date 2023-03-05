@@ -5,11 +5,20 @@ export interface Answer {
     // kotlinPackageName
     // mavenArtifactId
     // mavenScenarioName
+    version: string;
     groupId: string;
     artifactId: string;
 }
 
 export const questions: Generator.Question[] = [
+    {
+        type: 'list',
+        name: 'version' as keyof Answer,
+        message: 'Which java version do you want to use ?',
+        choices: [
+            '1.8'
+        ]
+    },
     {
         type: 'input',
         name: 'groupId' as keyof Answer,

@@ -1,12 +1,20 @@
 import Generator, { GeneratorOptions } from 'yeoman-generator';
 import * as Language from './questions/language/index';
 import * as Kotlin from './questions/language/kotlin';
+import * as Java from './questions/language/java';
 import { CaseHelper, IYeomanGenerator, DestinationProcessor } from '@clowder-generator/utils';
 import * as path from 'path';
 
 export interface GeneratorContext {
     language: string;
     kotlin?: {
+        groupId: string;
+        groupPath: string;
+        artifactId: string;
+        packageName: string;
+    };
+    java?: {
+        version: string;
         groupId: string;
         groupPath: string;
         artifactId: string;
@@ -26,7 +34,8 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
     public initializing(): void {
         this.context = {
             language: '',
-            kotlin: undefined
+            kotlin: undefined,
+            java: undefined
         };
     }
 
@@ -46,6 +55,18 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
                 };
                 break;
             }
+            case 'java': {
+                const javaAnswer = await this.prompt<Java.Answer>(Java.questions);
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                this.context!.java = {
+                    version: javaAnswer.version,
+                    groupId: javaAnswer.groupId,
+                    groupPath: path.join(...javaAnswer.groupId.split('.')),
+                    artifactId: javaAnswer.artifactId,
+                    packageName: CaseHelper.fromKebabCase(javaAnswer.artifactId).toCamelCase().toLowerCase()
+                };
+                break;
+            }
             default:
                 throw new Error();
         }
@@ -59,6 +80,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
         this.fs.copyTpl(
             this.templatePath('kotlin/**/*'),
             this.destinationPath(),
+            // TODO: here, have to find a way to build a different set of value and path post processor based on the chosen language
             {
                 mavenArtifactId: this.context?.kotlin?.artifactId,
                 kotlinGroupId: this.context?.kotlin?.groupId,
