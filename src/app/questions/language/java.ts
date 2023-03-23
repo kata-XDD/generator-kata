@@ -1,5 +1,10 @@
 import Generator from 'yeoman-generator';
-import { Validator } from '@clowder-generator/utils';
+import {
+    kebabCaseValidation,
+    nonBlankValidation,
+    shouldMatchRegexValidation,
+    validateWith
+} from '@clowder-generator/utils/dist/validator-helper';
 
 export interface Answer {
     // kotlinPackageName
@@ -24,9 +29,9 @@ export const questions: Generator.Question[] = [
         name: 'groupId' as keyof Answer,
         message: 'What will the groupId be ?',
         default: 'fr.leddzip.kata.xdd.base.kotlinxdd',
-        validate: Validator.validateWith([
-            Validator.nonBlankValidation('GroupId cannot be blank'),
-            Validator.shouldMatchRegexValidation(/^([a-z]+\.)*[a-z]+$/)
+        validate: validateWith([
+            nonBlankValidation('GroupId cannot be blank'),
+            shouldMatchRegexValidation(/^([a-z]+\.)*[a-z]+$/)
         ], {
             trimmed: true
         })
@@ -35,9 +40,9 @@ export const questions: Generator.Question[] = [
         type: 'input',
         name: 'artifactId' as keyof Answer,
         message: 'What will the artifactId be ?',
-        validate: Validator.validateWith([
-            Validator.nonBlankValidation('ArtifactId cannot be blank'),
-            Validator.kebabCaseValidation('ArtifactId must be in kebab-case')
+        validate: validateWith([
+            nonBlankValidation('ArtifactId cannot be blank'),
+            kebabCaseValidation('ArtifactId must be in kebab-case')
         ], {
             trimmed: true
         })

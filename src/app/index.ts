@@ -2,26 +2,11 @@ import Generator, { GeneratorOptions } from 'yeoman-generator';
 import * as Language from './questions/language/index';
 import * as Kotlin from './questions/language/kotlin';
 import * as Java from './questions/language/java';
-import { CaseHelper, IYeomanGenerator, DestinationProcessor } from '@clowder-generator/utils';
+import { IYeomanGenerator } from '@clowder-generator/utils';
 import * as path from 'path';
-
-export interface GeneratorContext {
-    language: string;
-    kotlin?: {
-        groupId: string;
-        groupPath: string;
-        artifactId: string;
-        packageName: string;
-    };
-    java?: {
-        version: string;
-        groupId: string;
-        groupPath: string;
-        artifactId: string;
-        packageName: string;
-    };
-
-}
+import { GeneratorContext } from './model';
+import { fromKebabCase } from '@clowder-generator/utils/dist/case-helper';
+import { renameAll } from '@clowder-generator/utils/dist/destination-path-processor-helper';
 
 export default class GeneratorKata extends Generator<GeneratorOptions> implements IYeomanGenerator {
     private context: GeneratorContext | undefined = undefined;
@@ -51,7 +36,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
                     groupId: kotlinAnswer.groupId,
                     groupPath: path.join(...kotlinAnswer.groupId.split('.')),
                     artifactId: kotlinAnswer.artifactId,
-                    packageName: CaseHelper.fromKebabCase(kotlinAnswer.artifactId).toCamelCase().toLowerCase()
+                    packageName: fromKebabCase(kotlinAnswer.artifactId).toCamelCase().toLowerCase()
                 };
                 break;
             }
@@ -63,7 +48,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
                     groupId: javaAnswer.groupId,
                     groupPath: path.join(...javaAnswer.groupId.split('.')),
                     artifactId: javaAnswer.artifactId,
-                    packageName: CaseHelper.fromKebabCase(javaAnswer.artifactId).toCamelCase().toLowerCase()
+                    packageName: fromKebabCase(javaAnswer.artifactId).toCamelCase().toLowerCase()
                 };
                 break;
             }
@@ -90,7 +75,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
             undefined,
             {
                 globOptions: { dot: true },
-                processDestinationPath: DestinationProcessor.renameAll(
+                processDestinationPath: renameAll(
                     ['kotlinPackageName', this.context?.kotlin?.packageName],
                     ['kotlinGroupIdPath', this.context?.kotlin?.groupPath])
             }

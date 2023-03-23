@@ -24,7 +24,7 @@
         "prepare": "husky install"
     },
     "dependencies": {
-        "@clowder-generator/utils": "^1.1.0",
+        "@clowder-generator/utils": "^2.0.4",
         "yeoman-generator": "^5.7.0"
     },
     "devDependencies": {

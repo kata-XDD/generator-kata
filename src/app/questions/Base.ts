@@ -1,5 +1,5 @@
 import Generator from 'yeoman-generator';
-import { Validator } from '@clowder-generator/utils';
+import { nonBlankValidation } from '@clowder-generator/utils/dist/validator-helper';
 
 export interface Answer {
     name: string;
@@ -10,5 +10,5 @@ export const question: Generator.Question = {
     name: 'name' as keyof Answer,
     message: 'What will be the name of the application ?',
     default: 'application name',
-    validate: Validator.nonBlankValidation('The package name should not be empty')
+    validate: nonBlankValidation('The package name should not be empty')
 };
