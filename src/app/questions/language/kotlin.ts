@@ -5,6 +5,8 @@ import {
     shouldMatchRegexValidation,
     validateWith
 } from '@clowder-generator/utils/dist/validator-helper';
+import { Context } from '@clowder-generator/utils/dist/context-helper';
+import { renameAll } from '@clowder-generator/utils/dist/destination-path-processor-helper';
 
 export interface Answer {
     // kotlinPackageName
@@ -39,3 +41,14 @@ export const questions: Generator.Question[] = [
         })
     }
 ];
+
+export const kotlinContext: Context = {
+    templateContext: () => ({
+        groupId: '',
+        artifactId: ''
+    }),
+    templatePath: () => 'kotlin/**/*',
+    destinationPathProcessor: renameAll(
+        ['kotlinPackageName', 'this.context?.kotlin?.packageName'],
+        ['kotlinGroupIdPath', 'this.context?.kotlin?.groupPath'])
+};
