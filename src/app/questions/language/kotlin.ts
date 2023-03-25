@@ -6,7 +6,13 @@ import {
     validateWith
 } from '@clowder-generator/utils/dist/validator-helper';
 import { Context } from '@clowder-generator/utils/dist/context-helper';
-import { renameAll } from '@clowder-generator/utils/dist/destination-path-processor-helper';
+import {
+    DestinationPathProcessor,
+    renameAll
+} from '@clowder-generator/utils/dist/destination-path-processor-helper';
+import { ITemplateData } from '@clowder-generator/utils';
+import * as path from 'path';
+import { fromKebabCase } from '@clowder-generator/utils/dist/case-helper';
 
 export interface Answer {
     // kotlinPackageName
@@ -42,13 +48,35 @@ export const questions: Generator.Question[] = [
     }
 ];
 
-export const kotlinContext: Context = {
-    templateContext: () => ({
-        groupId: '',
-        artifactId: ''
-    }),
-    templatePath: () => 'kotlin/**/*',
-    destinationPathProcessor: renameAll(
-        ['kotlinPackageName', 'this.context?.kotlin?.packageName'],
-        ['kotlinGroupIdPath', 'this.context?.kotlin?.groupPath'])
-};
+export class KotlinContext implements Context {
+    private readonly groupId: string;
+    private readonly groupPath: string;
+    private readonly artifactId: string;
+    private readonly packageName: string;
+
+    public destinationPathProcessor: DestinationPathProcessor;
+
+    constructor(kotlinAnswer: Answer) {
+        this.groupId = kotlinAnswer.groupId;
+        this.groupPath = path.join(...kotlinAnswer.groupId.split('.'));
+        this.artifactId = kotlinAnswer.artifactId;
+        this.packageName = fromKebabCase(kotlinAnswer.artifactId).toCamelCase().toLowerCase();
+
+        this.destinationPathProcessor = renameAll(
+            ['kotlinPackageName', this.packageName],
+            ['kotlinGroupIdPath', this.groupPath]
+        );
+    }
+
+    templateContext(): ITemplateData {
+        return {
+            mavenArtifactId: this.artifactId,
+            kotlinGroupId: this.groupId,
+            kotlinPackageName: this.packageName
+        };
+    }
+
+    templatePath(): string | string[] {
+        return 'kotlin/**/*';
+    }
+}
