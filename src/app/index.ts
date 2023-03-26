@@ -6,10 +6,12 @@ import { IYeomanGenerator } from '@clowder-generator/utils';
 import * as path from 'path';
 import { GeneratorContext } from './model';
 import { fromKebabCase } from '@clowder-generator/utils/dist/case-helper';
-import { renameAll } from '@clowder-generator/utils/dist/destination-path-processor-helper';
+import { Context } from '@clowder-generator/utils/dist/context-helper';
+import { KotlinContext } from './questions/language/kotlin';
 
 export default class GeneratorKata extends Generator<GeneratorOptions> implements IYeomanGenerator {
     private context: GeneratorContext | undefined = undefined;
+    private kotlinContext: Context | undefined = undefined;
 
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(args: string, opts: GeneratorOptions) {
@@ -31,13 +33,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
         switch (languageAnswer.language) {
             case 'kotlin': {
                 const kotlinAnswer = await this.prompt<Kotlin.Answer>(Kotlin.questions);
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                this.context!.kotlin = {
-                    groupId: kotlinAnswer.groupId,
-                    groupPath: path.join(...kotlinAnswer.groupId.split('.')),
-                    artifactId: kotlinAnswer.artifactId,
-                    packageName: fromKebabCase(kotlinAnswer.artifactId).toCamelCase().toLowerCase()
-                };
+                this.kotlinContext = new KotlinContext(kotlinAnswer);
                 break;
             }
             case 'java': {
@@ -63,21 +59,18 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
 
     public writing(): void {
         this.fs.copyTpl(
-            this.templatePath('kotlin/**/*'),
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.templatePath(...this.kotlinContext!.templatePath()),
             this.destinationPath(),
             // TODO: here, have to find a way to build a different set of value and path post processor based on the chosen language
             {
-                mavenArtifactId: this.context?.kotlin?.artifactId,
-                kotlinGroupId: this.context?.kotlin?.groupId,
-                kotlinPackageName: this.context?.kotlin?.packageName,
+                ...this.kotlinContext?.templateContext(),
                 mavenScenarioName: 'dummy'
             },
             undefined,
             {
                 globOptions: { dot: true },
-                processDestinationPath: renameAll(
-                    ['kotlinPackageName', this.context?.kotlin?.packageName],
-                    ['kotlinGroupIdPath', this.context?.kotlin?.groupPath])
+                processDestinationPath: this.kotlinContext?.destinationPathProcessor
             }
         );
     }
