@@ -38,4 +38,4 @@ Feature: Basic kotlin generation
             | src/feature-test/resources/feature/dummy.feature                             |
             | src/feature-test/resources/junit-platform.properties                         |
             | src/main/kotlin/this/is/my/group/id/myartifactid/Dummy.kt                    |
-            | src/test/kotlin/this/is/my/group/id/myartifactid/DummyTest.kt |
+            | src/test/kotlin/this/is/my/group/id/myartifactid/DummyTest.kt                |

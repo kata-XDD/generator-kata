@@ -58,6 +58,10 @@ Then('I should have a file {string} with the content', function (this: CustomWor
 });
 
 Then('I should have the following files', function (this: CustomWorld, dataTable: DataTable): void {
+    if (this.runResult === undefined) {
+        console.error('Running into an error: ', this.error);
+        throw new Error('runResult has not been correctly build...');
+    }
     for (const filePath of dataTable.rows()) {
         this.runResult?.assertFile(filePath);
     }

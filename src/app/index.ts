@@ -60,7 +60,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
     public writing(): void {
         this.fs.copyTpl(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.templatePath(...this.kotlinContext!.templatePath()),
+            this.templatePath(this.kotlinContext!.templatePath() as string),
             this.destinationPath(),
             // TODO: here, have to find a way to build a different set of value and path post processor based on the chosen language
             {
