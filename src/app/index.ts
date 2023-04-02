@@ -3,15 +3,15 @@ import * as Language from './questions/language/index';
 import * as Kotlin from './questions/language/kotlin';
 import * as Java from './questions/language/java';
 import { IYeomanGenerator } from '@clowder-generator/utils';
-import * as path from 'path';
 import { GeneratorContext } from './model';
-import { fromKebabCase } from '@clowder-generator/utils/dist/case-helper';
-import { Context } from '@clowder-generator/utils/dist/context-helper';
+import { Context, mergeTemplatePath } from '@clowder-generator/utils/dist/context-helper';
 import { KotlinContext } from './questions/language/kotlin';
+import { JavaContext } from './questions/language/java';
 
 export default class GeneratorKata extends Generator<GeneratorOptions> implements IYeomanGenerator {
     private context: GeneratorContext | undefined = undefined;
     private kotlinContext: Context | undefined = undefined;
+    private javaContext: Context | undefined = undefined;
 
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(args: string, opts: GeneratorOptions) {
@@ -39,13 +39,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
             case 'java': {
                 const javaAnswer = await this.prompt<Java.Answer>(Java.questions);
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                this.context!.java = {
-                    version: javaAnswer.version,
-                    groupId: javaAnswer.groupId,
-                    groupPath: path.join(...javaAnswer.groupId.split('.')),
-                    artifactId: javaAnswer.artifactId,
-                    packageName: fromKebabCase(javaAnswer.artifactId).toCamelCase().toLowerCase()
-                };
+                this.javaContext = new JavaContext(javaAnswer);
                 break;
             }
             default:
@@ -60,7 +54,7 @@ export default class GeneratorKata extends Generator<GeneratorOptions> implement
     public writing(): void {
         this.fs.copyTpl(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.templatePath(this.kotlinContext!.templatePath() as string),
+            this.templatePath(...mergeTemplatePath(this.kotlinContext!)),
             this.destinationPath(),
             // TODO: here, have to find a way to build a different set of value and path post processor based on the chosen language
             {

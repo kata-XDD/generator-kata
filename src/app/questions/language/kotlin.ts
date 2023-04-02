@@ -15,9 +15,6 @@ import * as path from 'path';
 import { fromKebabCase } from '@clowder-generator/utils/dist/case-helper';
 
 export interface Answer {
-    // kotlinPackageName
-    // mavenArtifactId
-    // mavenScenarioName
     groupId: string;
     artifactId: string;
 }
